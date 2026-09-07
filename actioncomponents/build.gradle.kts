@@ -1,21 +1,15 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinCompose)
 }
 
 android {
-    namespace = "com.creative.uienginesampleapp"
+    namespace = "com.creative.actioncomponents"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.creative.uienginesampleapp"
         minSdk = 30
-        targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        missingDimensionStrategy("di", "standard")
     }
 
     buildTypes {
@@ -31,21 +25,12 @@ android {
     buildFeatures {
         compose = true
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/DEPENDENCIES"
-            excludes += "/META-INF/LICENSE*"
-            excludes += "/META-INF/NOTICE*"
-        }
-    }
 }
 
 dependencies {
     implementation(project(":core-ui"))
-    implementation(project(":actioncomponents"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidxNavigationCompose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
@@ -61,11 +46,4 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    androidTestImplementation(libs.robot.testing.engine) {
-        artifact {
-            type = "aar"
-            classifier = "standardDebug"
-        }
-    }
-    lintChecks(libs.engine.lint)
 }

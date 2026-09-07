@@ -36,7 +36,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.creative.uienginesampleapp.ui.theme.UIEngineSampleAppTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.creative.actioncomponents.ActionComponentType
+import com.creative.actioncomponents.ActionComponentsScreen
+import com.creative.actioncomponents.buttons.ButtonsScreen
+import com.creative.actioncomponents.fabs.FabsScreen
+import com.creative.actioncomponents.iconbuttons.IconButtonsScreen
+import com.creative.actioncomponents.segmented.SegmentedButtonsScreen
+import com.creative.core.ui.theme.UIEngineSampleAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +53,35 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UIEngineSampleAppTheme {
-                MainScreen()
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "main") {
+                    composable("main") {
+                        MainScreen(
+                            onCategoryClick = { category ->
+                                if (category.name == "Action Components") {
+                                    navController.navigate("action_components")
+                                }
+                            }
+                        )
+                    }
+                    composable("action_components") {
+                        ActionComponentsScreen(
+                            onNavigate = { type ->
+                                when (type) {
+                                    ActionComponentType.BUTTONS -> navController.navigate("buttons")
+                                    ActionComponentType.FABS -> navController.navigate("fabs")
+                                    ActionComponentType.ICON_BUTTONS -> navController.navigate("icon_buttons")
+                                    ActionComponentType.SEGMENTED -> navController.navigate("segmented")
+                                }
+                            },
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable("buttons") { ButtonsScreen(onBack = { navController.popBackStack() }) }
+                    composable("fabs") { FabsScreen(onBack = { navController.popBackStack() }) }
+                    composable("icon_buttons") { IconButtonsScreen(onBack = { navController.popBackStack() }) }
+                    composable("segmented") { SegmentedButtonsScreen(onBack = { navController.popBackStack() }) }
+                }
             }
         }
     }
@@ -58,7 +95,7 @@ data class Category(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(onCategoryClick: (Category) -> Unit) {
     val categories = listOf(
         Category("Action Components", "Buttons, FABs, and clickables", Icons.Default.PlayArrow),
         Category("Text & Input Controls", "TextFields, Switches, and Forms", Icons.Default.Edit),
@@ -108,7 +145,7 @@ fun MainScreen() {
             )
 
             categories.forEach { category ->
-                CategoryCard(category)
+                CategoryCard(category, onClick = { onCategoryClick(category) })
             }
         }
     }
@@ -116,9 +153,9 @@ fun MainScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryCard(category: Category) {
+fun CategoryCard(category: Category, onClick: () -> Unit) {
     ElevatedCard(
-        onClick = { /* TODO */ },
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         ListItem(
@@ -160,6 +197,6 @@ fun CategoryCard(category: Category) {
 @Composable
 fun MainScreenPreview() {
     UIEngineSampleAppTheme {
-        MainScreen()
+        MainScreen(onCategoryClick = {})
     }
 }

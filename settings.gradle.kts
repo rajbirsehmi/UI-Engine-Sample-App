@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "UI Engine Sample App"
 include(":app")
+include(":actioncomponents")
+include(":core-ui")
