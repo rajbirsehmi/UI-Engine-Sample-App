@@ -4,12 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -19,18 +29,20 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +66,34 @@ class MainActivity : ComponentActivity() {
         setContent {
             UIEngineSampleAppTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "main") {
+                NavHost(
+                    navController = navController,
+                    startDestination = "main",
+                    enterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(700)
+                        )
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(700)
+                        )
+                    },
+                    popEnterTransition = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(700)
+                        )
+                    },
+                    popExitTransition = {
+                        slideOutOfContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(700)
+                        )
+                    }
+                ) {
                     composable("main") {
                         MainScreen(
                             onCategoryClick = { category ->
@@ -90,63 +129,86 @@ class MainActivity : ComponentActivity() {
 data class Category(
     val name: String,
     val description: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val gradient: List<Color>
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(onCategoryClick: (Category) -> Unit) {
     val categories = listOf(
-        Category("Action Components", "Buttons, FABs, and clickables", Icons.Default.PlayArrow),
-        Category("Text & Input Controls", "TextFields, Switches, and Forms", Icons.Default.Edit),
-        Category("Containment & Structure", "Cards, Sheets, and Lists", Icons.Default.List),
-        Category("Navigation Components", "Bars, Rails, and Drawers", Icons.Default.Menu),
-        Category("Communication & Feedback", "Snackbars, Dialogs, and Progress", Icons.Default.Notifications),
-        Category("Layout Containers", "Box, Column, Row, and Scaffold", Icons.Default.Build)
+        Category("Action Components", "Buttons, FABs, and clickables", Icons.Default.PlayArrow, listOf(Color(0xFF6750A4), Color(0xFFD0BCFF))),
+        Category("Text & Input", "TextFields, Switches, Forms", Icons.Default.Edit, listOf(Color(0xFF006A6A), Color(0xFF4EE8E8))),
+        Category("Structure", "Cards, Sheets, and Lists", Icons.Default.List, listOf(Color(0xFF7D5260), Color(0xFFEFB8C8))),
+        Category("Navigation", "Bars, Rails, and Drawers", Icons.Default.Menu, listOf(Color(0xFF6750A4), Color(0xFF006A6A))),
+        Category("Feedback", "Snackbars, Dialogs, Progress", Icons.Default.Notifications, listOf(Color(0xFF006A6A), Color(0xFF7D5260))),
+        Category("Layout", "Box, Column, Row, Scaffold", Icons.Default.Build, listOf(Color(0xFF7D5260), Color(0xFF6750A4)))
     )
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
-                        "UI Engine Sample App",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold
+                        "UI Engine",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
-        },
-        containerColor = MaterialTheme.colorScheme.surface
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+                        )
+                    )
+                    .padding(24.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column {
+                    Text(
+                        "Design System",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "Master the Components",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+            }
+
             Text(
-                text = "Welcome to UI Engine Sample App",
+                text = "Components Library",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Explore the building blocks of modern Android interfaces.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp)
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(top = 8.dp)
             )
 
             categories.forEach { category ->
                 CategoryCard(category, onClick = { onCategoryClick(category) })
             }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -156,40 +218,56 @@ fun MainScreen(onCategoryClick: (Category) -> Unit) {
 fun CategoryCard(category: Category, onClick: () -> Unit) {
     ElevatedCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = category.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            supportingContent = {
-                Text(
-                    text = category.description,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            },
-            leadingContent = {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Brush.linearGradient(category.gradient)),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
                     imageVector = category.icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
-            },
-            trailingContent = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
+                Text(
+                    text = category.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(20.dp)
             )
-        )
+        }
     }
 }
 
