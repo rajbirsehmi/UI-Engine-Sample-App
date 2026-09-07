@@ -34,6 +34,13 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/LICENSE*"
+            excludes += "/META-INF/NOTICE*"
+        }
+    }
 }
 
 dependencies {
@@ -54,6 +61,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    androidTestImplementation(libs.robot.testing.engine)
+    androidTestImplementation(libs.robot.testing.engine) {
+        artifact {
+            type = "aar"
+            classifier = "standardDebug"
+        }
+    }
     lintChecks(libs.engine.lint)
 }
