@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,6 +93,7 @@ fun MainScreen() {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.testTag("top_app_bar"),
                 title = {
                     Text(
                         when (currentScreen) {
@@ -103,17 +105,21 @@ fun MainScreen() {
                             Screen.SegmentedButtons -> "Segmented Buttons"
                         },
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.testTag("screen_title")
                     )
                 },
                 navigationIcon = {
                     if (currentScreen != Screen.Main) {
-                        IconButton(onClick = {
-                            currentScreen = when (currentScreen) {
-                                Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
-                                else -> Screen.Main
-                            }
-                        }) {
+                        IconButton(
+                            onClick = {
+                                currentScreen = when (currentScreen) {
+                                    Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
+                                    else -> Screen.Main
+                                }
+                            },
+                            modifier = Modifier.testTag("back_button")
+                        ) {
                             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
                         }
                     }
@@ -154,11 +160,15 @@ fun MainScreen() {
                         )
 
                         categories.forEach { category ->
-                            CategoryCard(category, onClick = {
-                                if (category.name == "Action Components") {
-                                    currentScreen = Screen.ActionComponents
-                                }
-                            })
+                            CategoryCard(
+                                category,
+                                onClick = {
+                                    if (category.name == "Action Components") {
+                                        currentScreen = Screen.ActionComponents
+                                    }
+                                },
+                                modifier = Modifier.testTag("category_${category.name.replace(" ", "_").lowercase()}")
+                            )
                         }
                     }
                 }
@@ -182,7 +192,8 @@ fun ActionComponentsList(onComponentClick: (Screen) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(16.dp)
+            .testTag("action_components_list"),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val components = listOf(
@@ -213,10 +224,10 @@ fun ActionComponentsList(onComponentClick: (Screen) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryCard(category: Category, onClick: () -> Unit) {
+fun CategoryCard(category: Category, onClick: () -> Unit, modifier: Modifier = Modifier) {
     ElevatedCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         ListItem(
             headlineContent = {
