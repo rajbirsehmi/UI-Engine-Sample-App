@@ -27,3 +27,4 @@ rootProject.name = "UI Engine Sample App"
 include(":app")
 include(":core-ui")
 include(":action_components")
+include(":text_input_components")
