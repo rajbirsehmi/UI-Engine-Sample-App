@@ -52,7 +52,6 @@ jobs:
             # Capture logcat only if tests failed
             if [ $gradle_exit_code -ne 0 ]; then
               echo "Tests failed with exit code $gradle_exit_code. Capturing logcat..."
-              # Use -d to dump and exit, with a timeout to prevent hanging if device is lost
               timeout 60s adb logcat -d > logcat.txt || echo "Failed to capture logcat or timed out"
             else
               echo "Tests passed!"
@@ -60,28 +59,59 @@ jobs:
             
             exit $gradle_exit_code
 
-      - name: Upload Test Reports
+      - name: Consolidate HTML Reports
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: '**/build/reports/androidTests/connected/**'
+        run: |
+          mkdir -p consolidated-reports
+          
+          # Modules to check for reports
+          modules=("app" "action_components" "text_input_components")
+          
+          # Create a simple landing page
+          echo "<!DOCTYPE html><html><head><title>Test Reports Landing Page</title><style>body{font-family:sans-serif;padding:40px;background-color:#f4f7f9;color:#333;}ul{line-height:2;list-style:none;padding:0;}li{background:white;margin-bottom:10px;padding:15px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05);}a{color:#0366d6;text-decoration:none;font-weight:bold;}a:hover{text-decoration:underline;}h1{color:#1a202c;} .download-btn{display:inline-block;padding:10px 20px;background-color:#28a745;color:white !important;border-radius:5px;margin-bottom:20px;text-decoration:none;font-weight:bold;}</style></head><body>" > consolidated-reports/index.html
+          echo "<h1>UI Engine Sample App - UI Test Reports</h1>" >> consolidated-reports/index.html
+          echo "<p>Execution Date: $(date)</p>" >> consolidated-reports/index.html
+          echo "<p><em>Note: To view these reports locally, download and extract the ZIP, then open index.html.</em></p><ul>" >> consolidated-reports/index.html
+          
+          for module in "${modules[@]}"; do
+            report_dir="$module/build/reports/androidTests/connected"
+            if [ -d "$report_dir" ]; then
+              echo "Copying reports for $module..."
+              mkdir -p "consolidated-reports/$module"
+              cp -r "$report_dir/." "consolidated-reports/$module/"
+              echo "<li><strong>$module:</strong> <a href='$module/index.html'>View Full Report</a></li>" >> consolidated-reports/index.html
+            else
+              echo "No reports found for $module."
+              echo "<li><strong>$module:</strong> <span style='color:#d73a49;'>No reports generated</span></li>" >> consolidated-reports/index.html
+            fi
+          done
+          
+          echo "</ul></body></html>" >> consolidated-reports/index.html
 
-      - name: Upload Test Results & Screenshots
+      - name: Upload Consolidated Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-test-artifacts
+          name: ui-test-html-reports
+          path: consolidated-reports/
+          retention-days: 7
+
+      - name: Upload Raw Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-test-results
           path: |
             **/build/outputs/androidTest-results/connected/**
             **/build/outputs/connected_android_test_additional_output/**
-            **/build/outputs/logs/**
-          if-no-files-found: warn
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload Logcat
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logcat
+          name: device-logcat
           path: logcat.txt
           if-no-files-found: ignore
+          retention-days: 7

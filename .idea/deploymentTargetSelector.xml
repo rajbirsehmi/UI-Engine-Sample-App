@@ -10,10 +10,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="IconButtonShowcaseTest">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="testIconButtonToggle()">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
