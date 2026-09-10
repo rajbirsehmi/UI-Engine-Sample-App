@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation(project(":action_components"))
+    implementation(project(":text_input_components"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

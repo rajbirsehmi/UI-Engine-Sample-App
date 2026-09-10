@@ -47,6 +47,9 @@ import com.creative.uienginesampleapp.action_components.ButtonShowcase
 import com.creative.uienginesampleapp.action_components.FabShowcase
 import com.creative.uienginesampleapp.action_components.IconButtonShowcase
 import com.creative.uienginesampleapp.action_components.SegmentedButtonShowcase
+import com.creative.uienginesampleapp.text_input_components.SelectionControlsShowcase
+import com.creative.uienginesampleapp.text_input_components.SliderShowcase
+import com.creative.uienginesampleapp.text_input_components.TextFieldShowcase
 import com.creative.uienginesampleapp.ui.theme.UIEngineSampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -74,6 +77,10 @@ sealed class Screen {
     object FABs : Screen()
     object IconButtons : Screen()
     object SegmentedButtons : Screen()
+    object TextInputControls : Screen()
+    object TextFields : Screen()
+    object SelectionControls : Screen()
+    object Sliders : Screen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,6 +110,10 @@ fun MainScreen() {
                             Screen.FABs -> "FABs"
                             Screen.IconButtons -> "Icon Buttons"
                             Screen.SegmentedButtons -> "Segmented Buttons"
+                            Screen.TextInputControls -> "Text & Input Controls"
+                            Screen.TextFields -> "Text Fields"
+                            Screen.SelectionControls -> "Selection Controls"
+                            Screen.Sliders -> "Sliders"
                         },
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
@@ -115,6 +126,7 @@ fun MainScreen() {
                             onClick = {
                                 currentScreen = when (currentScreen) {
                                     Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
+                                    Screen.TextFields, Screen.SelectionControls, Screen.Sliders -> Screen.TextInputControls
                                     else -> Screen.Main
                                 }
                             },
@@ -163,8 +175,10 @@ fun MainScreen() {
                             CategoryCard(
                                 category,
                                 onClick = {
-                                    if (category.name == "Action Components") {
-                                        currentScreen = Screen.ActionComponents
+                                    currentScreen = when (category.name) {
+                                        "Action Components" -> Screen.ActionComponents
+                                        "Text & Input Controls" -> Screen.TextInputControls
+                                        else -> Screen.Main
                                     }
                                 },
                                 modifier = Modifier.testTag("category_${category.name.replace(" ", "_").lowercase()}")
@@ -177,10 +191,53 @@ fun MainScreen() {
                         currentScreen = screen
                     })
                 }
+                Screen.TextInputControls -> {
+                    TextInputComponentsList(onComponentClick = { screen ->
+                        currentScreen = screen
+                    })
+                }
                 Screen.Buttons -> ButtonShowcase()
                 Screen.FABs -> FabShowcase()
                 Screen.IconButtons -> IconButtonShowcase()
                 Screen.SegmentedButtons -> SegmentedButtonShowcase()
+                Screen.TextFields -> TextFieldShowcase()
+                Screen.SelectionControls -> SelectionControlsShowcase()
+                Screen.Sliders -> SliderShowcase()
+            }
+        }
+    }
+}
+
+@Composable
+fun TextInputComponentsList(onComponentClick: (Screen) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+            .testTag("text_input_components_list"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        val components = listOf(
+            "Text Fields" to Screen.TextFields,
+            "Selection Controls" to Screen.SelectionControls,
+            "Sliders" to Screen.Sliders
+        )
+
+        components.forEach { (name, screen) ->
+            ElevatedCard(
+                onClick = { onComponentClick(screen) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ListItem(
+                    headlineContent = { Text(name) },
+                    trailingContent = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null
+                        )
+                    }
+                )
             }
         }
     }
