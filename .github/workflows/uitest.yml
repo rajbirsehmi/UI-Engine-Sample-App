@@ -44,16 +44,7 @@ jobs:
           ram-size: 4096M
           heap-size: 1024M
           disk-size: 8G
-          script: >
-            ./gradlew clean :app:connectedAndroidTest :action_components:connectedAndroidTest :text_input_components:connectedAndroidTest --continue;
-            gradle_exit_code=$?;
-            if [ $gradle_exit_code -ne 0 ]; then
-              echo "Tests failed with exit code $gradle_exit_code. Capturing logcat...";
-              timeout 60s adb logcat -d > logcat.txt || echo "Failed to capture logcat";
-            else
-              echo "Tests passed!";
-            fi;
-            exit $gradle_exit_code
+          script: ./gradlew clean :app:connectedAndroidTest :action_components:connectedAndroidTest :text_input_components:connectedAndroidTest --continue || { echo "Tests failed, capturing logcat..."; timeout 60s adb logcat -d > logcat.txt; exit 1; }
 
       - name: Consolidate HTML Reports
         if: always()
