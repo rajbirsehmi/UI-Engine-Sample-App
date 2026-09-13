@@ -47,6 +47,9 @@ import com.creative.uienginesampleapp.action_components.ButtonShowcase
 import com.creative.uienginesampleapp.action_components.FabShowcase
 import com.creative.uienginesampleapp.action_components.IconButtonShowcase
 import com.creative.uienginesampleapp.action_components.SegmentedButtonShowcase
+import com.creative.uienginesampleapp.containment_components.CardsShowcase
+import com.creative.uienginesampleapp.containment_components.ListsShowcase
+import com.creative.uienginesampleapp.containment_components.SheetsShowcase
 import com.creative.uienginesampleapp.text_input_components.SelectionControlsShowcase
 import com.creative.uienginesampleapp.text_input_components.SliderShowcase
 import com.creative.uienginesampleapp.text_input_components.TextFieldShowcase
@@ -81,6 +84,10 @@ sealed class Screen {
     object TextFields : Screen()
     object SelectionControls : Screen()
     object Sliders : Screen()
+    object ContainmentComponents : Screen()
+    object Cards : Screen()
+    object Sheets : Screen()
+    object Lists : Screen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,6 +121,10 @@ fun MainScreen() {
                             Screen.TextFields -> "Text Fields"
                             Screen.SelectionControls -> "Selection Controls"
                             Screen.Sliders -> "Sliders"
+                            Screen.ContainmentComponents -> "Containment & Structure"
+                            Screen.Cards -> "Cards"
+                            Screen.Sheets -> "Sheets"
+                            Screen.Lists -> "Lists"
                         },
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
@@ -127,6 +138,7 @@ fun MainScreen() {
                                 currentScreen = when (currentScreen) {
                                     Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
                                     Screen.TextFields, Screen.SelectionControls, Screen.Sliders -> Screen.TextInputControls
+                                    Screen.Cards, Screen.Sheets, Screen.Lists -> Screen.ContainmentComponents
                                     else -> Screen.Main
                                 }
                             },
@@ -178,6 +190,7 @@ fun MainScreen() {
                                     currentScreen = when (category.name) {
                                         "Action Components" -> Screen.ActionComponents
                                         "Text & Input Controls" -> Screen.TextInputControls
+                                        "Containment & Structure" -> Screen.ContainmentComponents
                                         else -> Screen.Main
                                     }
                                 },
@@ -196,6 +209,11 @@ fun MainScreen() {
                         currentScreen = screen
                     })
                 }
+                Screen.ContainmentComponents -> {
+                    ContainmentComponentsList(onComponentClick = { screen ->
+                        currentScreen = screen
+                    })
+                }
                 Screen.Buttons -> ButtonShowcase()
                 Screen.FABs -> FabShowcase()
                 Screen.IconButtons -> IconButtonShowcase()
@@ -203,6 +221,44 @@ fun MainScreen() {
                 Screen.TextFields -> TextFieldShowcase()
                 Screen.SelectionControls -> SelectionControlsShowcase()
                 Screen.Sliders -> SliderShowcase()
+                Screen.Cards -> CardsShowcase()
+                Screen.Sheets -> SheetsShowcase()
+                Screen.Lists -> ListsShowcase()
+            }
+        }
+    }
+}
+
+@Composable
+fun ContainmentComponentsList(onComponentClick: (Screen) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+            .testTag("containment_components_list"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        val components = listOf(
+            "Cards" to Screen.Cards,
+            "Sheets" to Screen.Sheets,
+            "Lists" to Screen.Lists
+        )
+
+        components.forEach { (name, screen) ->
+            ElevatedCard(
+                onClick = { onComponentClick(screen) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ListItem(
+                    headlineContent = { Text(name) },
+                    trailingContent = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null
+                        )
+                    }
+                )
             }
         }
     }
