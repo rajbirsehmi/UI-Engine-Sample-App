@@ -44,7 +44,7 @@ jobs:
           ram-size: 4096M
           heap-size: 1024M
           disk-size: 8G
-          script: ./gradlew clean :app:connectedAndroidTest :action_components:connectedAndroidTest :text_input_components:connectedAndroidTest --continue || { echo "Tests failed, capturing logcat..."; timeout 60s adb logcat -d > logcat.txt; exit 1; }
+          script: ./gradlew clean :app:connectedAndroidTest :action_components:connectedAndroidTest :text_input_components:connectedAndroidTest :containment_components:connectedAndroidTest --continue || { echo "Tests failed, capturing logcat..."; timeout 60s adb logcat -d > logcat.txt; exit 1; }
 
       - name: Consolidate HTML Reports
         if: always()
@@ -52,7 +52,7 @@ jobs:
           mkdir -p consolidated-reports
           
           # Modules to check for reports
-          modules=("app" "action_components" "text_input_components")
+          modules=("app" "action_components" "text_input_components" "containment_components")
           
           # Create a simple landing page
           echo "<!DOCTYPE html><html><head><title>Test Reports Landing Page</title><style>body{font-family:sans-serif;padding:40px;background-color:#f4f7f9;color:#333;}ul{line-height:2;list-style:none;padding:0;}li{background:white;margin-bottom:10px;padding:15px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05);}a{color:#0366d6;text-decoration:none;font-weight:bold;}a:hover{text-decoration:underline;}h1{color:#1a202c;} .download-btn{display:inline-block;padding:10px 20px;background-color:#28a745;color:white !important;border-radius:5px;margin-bottom:20px;text-decoration:none;font-weight:bold;}</style></head><body>" > consolidated-reports/index.html

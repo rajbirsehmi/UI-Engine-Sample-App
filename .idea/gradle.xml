@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/action_components" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/containment_components" />
             <option value="$PROJECT_DIR$/core-ui" />
             <option value="$PROJECT_DIR$/text_input_components" />
           </set>
