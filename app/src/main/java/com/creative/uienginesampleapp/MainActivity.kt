@@ -47,9 +47,15 @@ import com.creative.uienginesampleapp.action_components.ButtonShowcase
 import com.creative.uienginesampleapp.action_components.FabShowcase
 import com.creative.uienginesampleapp.action_components.IconButtonShowcase
 import com.creative.uienginesampleapp.action_components.SegmentedButtonShowcase
+import com.creative.uienginesampleapp.communication_components.CommunicationShowcase
 import com.creative.uienginesampleapp.containment_components.CardsShowcase
 import com.creative.uienginesampleapp.containment_components.ListsShowcase
 import com.creative.uienginesampleapp.containment_components.SheetsShowcase
+import com.creative.uienginesampleapp.navigation_components.NavigationShowcase
+import com.creative.uienginesampleapp.communication_components.CommunicationShowcase
+import com.creative.uienginesampleapp.layout_containers.LayoutShowcase
+import com.creative.uienginesampleapp.layout_containers.LayoutShowcase
+import com.creative.uienginesampleapp.navigation_components.NavigationShowcase
 import com.creative.uienginesampleapp.text_input_components.SelectionControlsShowcase
 import com.creative.uienginesampleapp.text_input_components.SliderShowcase
 import com.creative.uienginesampleapp.text_input_components.TextFieldShowcase
@@ -88,6 +94,9 @@ sealed class Screen {
     object Cards : Screen()
     object Sheets : Screen()
     object Lists : Screen()
+    object NavigationComponents : Screen()
+    object CommunicationComponents : Screen()
+    object LayoutContainers : Screen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,6 +134,9 @@ fun MainScreen() {
                             Screen.Cards -> "Cards"
                             Screen.Sheets -> "Sheets"
                             Screen.Lists -> "Lists"
+                            Screen.NavigationComponents -> "Navigation Components"
+                            Screen.CommunicationComponents -> "Communication & Feedback"
+                            Screen.LayoutContainers -> "Layout Containers"
                         },
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
@@ -139,6 +151,9 @@ fun MainScreen() {
                                     Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
                                     Screen.TextFields, Screen.SelectionControls, Screen.Sliders -> Screen.TextInputControls
                                     Screen.Cards, Screen.Sheets, Screen.Lists -> Screen.ContainmentComponents
+                                    Screen.NavigationComponents -> Screen.Main
+                                    Screen.CommunicationComponents -> Screen.Main
+                                    Screen.LayoutContainers -> Screen.Main
                                     else -> Screen.Main
                                 }
                             },
@@ -191,6 +206,9 @@ fun MainScreen() {
                                         "Action Components" -> Screen.ActionComponents
                                         "Text & Input Controls" -> Screen.TextInputControls
                                         "Containment & Structure" -> Screen.ContainmentComponents
+                                        "Navigation Components" -> Screen.NavigationComponents
+                                        "Communication & Feedback" -> Screen.CommunicationComponents
+                                        "Layout Containers" -> Screen.LayoutContainers
                                         else -> Screen.Main
                                     }
                                 },
@@ -224,6 +242,9 @@ fun MainScreen() {
                 Screen.Cards -> CardsShowcase()
                 Screen.Sheets -> SheetsShowcase()
                 Screen.Lists -> ListsShowcase()
+                Screen.NavigationComponents -> NavigationShowcase()
+                Screen.CommunicationComponents -> CommunicationShowcase()
+                Screen.LayoutContainers -> LayoutShowcase()
             }
         }
     }
