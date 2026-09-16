@@ -42,12 +42,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":action_components"))
-    implementation(project(":text_input_components"))
-    implementation(project(":containment_components"))
-    implementation(project(":navigation_components"))
-    implementation(project(":communication_components"))
-    implementation(project(":layout_containers"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -65,7 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    androidTestImplementation(libs.robot.testing.engine) {
+    androidTestImplementation(libs.uiengine) {
         artifact {
             type = "aar"
             classifier = "standardDebug"

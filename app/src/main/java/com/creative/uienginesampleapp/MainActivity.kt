@@ -12,14 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,24 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.creative.uienginesampleapp.action_components.ButtonShowcase
-import com.creative.uienginesampleapp.action_components.FabShowcase
-import com.creative.uienginesampleapp.action_components.IconButtonShowcase
-import com.creative.uienginesampleapp.action_components.SegmentedButtonShowcase
-import com.creative.uienginesampleapp.communication_components.CommunicationShowcase
-import com.creative.uienginesampleapp.containment_components.CardsShowcase
-import com.creative.uienginesampleapp.containment_components.ListsShowcase
-import com.creative.uienginesampleapp.containment_components.SheetsShowcase
-import com.creative.uienginesampleapp.navigation_components.NavigationShowcase
-import com.creative.uienginesampleapp.communication_components.CommunicationShowcase
-import com.creative.uienginesampleapp.layout_containers.LayoutShowcase
-import com.creative.uienginesampleapp.layout_containers.LayoutShowcase
-import com.creative.uienginesampleapp.navigation_components.NavigationShowcase
-import com.creative.uienginesampleapp.text_input_components.SelectionControlsShowcase
-import com.creative.uienginesampleapp.text_input_components.SliderShowcase
-import com.creative.uienginesampleapp.text_input_components.TextFieldShowcase
 import com.creative.uienginesampleapp.ui.theme.UIEngineSampleAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -73,31 +55,21 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class Category(
+sealed class Screen(val title: String) {
+    object Main : Screen("UiTestEngine Showcase")
+    object Gestures : Screen("Gestures")
+    object TextInput : Screen("Text Input")
+    object Scrolling : Screen("Scrolling")
+    object System : Screen("System")
+    object Accessibility : Screen("Accessibility")
+}
+
+data class TestCategory(
     val name: String,
     val description: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val screen: Screen
 )
-
-sealed class Screen {
-    object Main : Screen()
-    object ActionComponents : Screen()
-    object Buttons : Screen()
-    object FABs : Screen()
-    object IconButtons : Screen()
-    object SegmentedButtons : Screen()
-    object TextInputControls : Screen()
-    object TextFields : Screen()
-    object SelectionControls : Screen()
-    object Sliders : Screen()
-    object ContainmentComponents : Screen()
-    object Cards : Screen()
-    object Sheets : Screen()
-    object Lists : Screen()
-    object NavigationComponents : Screen()
-    object CommunicationComponents : Screen()
-    object LayoutContainers : Screen()
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,39 +77,19 @@ fun MainScreen() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Main) }
 
     val categories = listOf(
-        Category("Action Components", "Buttons, FABs, and clickables", Icons.Default.PlayArrow),
-        Category("Text & Input Controls", "TextFields, Switches, and Forms", Icons.Default.Edit),
-        Category("Containment & Structure", "Cards, Sheets, and Lists", Icons.AutoMirrored.Filled.List),
-        Category("Navigation Components", "Bars, Rails, and Drawers", Icons.Default.Menu),
-        Category("Communication & Feedback", "Snackbars, Dialogs, and Progress", Icons.Default.Notifications),
-        Category("Layout Containers", "Box, Column, Row, and Scaffold", Icons.Default.Build)
+        TestCategory("Gestures", "Click, Tap, Long Press, Drag, Zoom, Rotate", Icons.Default.TouchApp, Screen.Gestures),
+        TestCategory("Text Input", "Enter, Replace, Clear, IME, Focus", Icons.Default.Edit, Screen.TextInput),
+        TestCategory("Scrolling", "Tag, Index, Key, SwipeUntilVisible", Icons.Default.List, Screen.Scrolling),
+        TestCategory("System", "Back, Home, Permission, Notifications", Icons.Default.Settings, Screen.System),
+        TestCategory("Accessibility", "Focus Order, Labels, Traversal", Icons.Default.Accessibility, Screen.Accessibility)
     )
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.testTag("top_app_bar"),
                 title = {
                     Text(
-                        when (currentScreen) {
-                            Screen.Main -> "UI Engine Sample App"
-                            Screen.ActionComponents -> "Action Components"
-                            Screen.Buttons -> "Buttons"
-                            Screen.FABs -> "FABs"
-                            Screen.IconButtons -> "Icon Buttons"
-                            Screen.SegmentedButtons -> "Segmented Buttons"
-                            Screen.TextInputControls -> "Text & Input Controls"
-                            Screen.TextFields -> "Text Fields"
-                            Screen.SelectionControls -> "Selection Controls"
-                            Screen.Sliders -> "Sliders"
-                            Screen.ContainmentComponents -> "Containment & Structure"
-                            Screen.Cards -> "Cards"
-                            Screen.Sheets -> "Sheets"
-                            Screen.Lists -> "Lists"
-                            Screen.NavigationComponents -> "Navigation Components"
-                            Screen.CommunicationComponents -> "Communication & Feedback"
-                            Screen.LayoutContainers -> "Layout Containers"
-                        },
+                        text = currentScreen.title,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.testTag("screen_title")
@@ -146,17 +98,7 @@ fun MainScreen() {
                 navigationIcon = {
                     if (currentScreen != Screen.Main) {
                         IconButton(
-                            onClick = {
-                                currentScreen = when (currentScreen) {
-                                    Screen.Buttons, Screen.FABs, Screen.IconButtons, Screen.SegmentedButtons -> Screen.ActionComponents
-                                    Screen.TextFields, Screen.SelectionControls, Screen.Sliders -> Screen.TextInputControls
-                                    Screen.Cards, Screen.Sheets, Screen.Lists -> Screen.ContainmentComponents
-                                    Screen.NavigationComponents -> Screen.Main
-                                    Screen.CommunicationComponents -> Screen.Main
-                                    Screen.LayoutContainers -> Screen.Main
-                                    else -> Screen.Main
-                                }
-                            },
+                            onClick = { currentScreen = Screen.Main },
                             modifier = Modifier.testTag("back_button")
                         ) {
                             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
@@ -166,10 +108,10 @@ fun MainScreen() {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                modifier = Modifier.testTag("top_app_bar")
             )
-        },
-        containerColor = MaterialTheme.colorScheme.surface
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -177,231 +119,40 @@ fun MainScreen() {
                 .fillMaxSize()
         ) {
             when (currentScreen) {
-                Screen.Main -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "Welcome to UI Engine Sample App",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Explore the building blocks of modern Android interfaces.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        categories.forEach { category ->
-                            CategoryCard(
-                                category,
-                                onClick = {
-                                    currentScreen = when (category.name) {
-                                        "Action Components" -> Screen.ActionComponents
-                                        "Text & Input Controls" -> Screen.TextInputControls
-                                        "Containment & Structure" -> Screen.ContainmentComponents
-                                        "Navigation Components" -> Screen.NavigationComponents
-                                        "Communication & Feedback" -> Screen.CommunicationComponents
-                                        "Layout Containers" -> Screen.LayoutContainers
-                                        else -> Screen.Main
-                                    }
-                                },
-                                modifier = Modifier.testTag("category_${category.name.replace(" ", "_").lowercase()}")
-                            )
-                        }
-                    }
-                }
-                Screen.ActionComponents -> {
-                    ActionComponentsList(onComponentClick = { screen ->
-                        currentScreen = screen
-                    })
-                }
-                Screen.TextInputControls -> {
-                    TextInputComponentsList(onComponentClick = { screen ->
-                        currentScreen = screen
-                    })
-                }
-                Screen.ContainmentComponents -> {
-                    ContainmentComponentsList(onComponentClick = { screen ->
-                        currentScreen = screen
-                    })
-                }
-                Screen.Buttons -> ButtonShowcase()
-                Screen.FABs -> FabShowcase()
-                Screen.IconButtons -> IconButtonShowcase()
-                Screen.SegmentedButtons -> SegmentedButtonShowcase()
-                Screen.TextFields -> TextFieldShowcase()
-                Screen.SelectionControls -> SelectionControlsShowcase()
-                Screen.Sliders -> SliderShowcase()
-                Screen.Cards -> CardsShowcase()
-                Screen.Sheets -> SheetsShowcase()
-                Screen.Lists -> ListsShowcase()
-                Screen.NavigationComponents -> NavigationShowcase()
-                Screen.CommunicationComponents -> CommunicationShowcase()
-                Screen.LayoutContainers -> LayoutShowcase()
+                Screen.Main -> MainDashboard(categories) { currentScreen = it }
+                Screen.Gestures -> GesturesScreen()
+                Screen.TextInput -> TextInputScreen()
+                Screen.Scrolling -> ScrollingScreen()
+                Screen.System -> SystemScreen()
+                Screen.Accessibility -> AccessibilityScreen()
             }
         }
     }
 }
 
 @Composable
-fun ContainmentComponentsList(onComponentClick: (Screen) -> Unit) {
+fun MainDashboard(categories: List<TestCategory>, onNavigate: (Screen) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
-            .testTag("containment_components_list"),
+            .testTag("main_dashboard"),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val components = listOf(
-            "Cards" to Screen.Cards,
-            "Sheets" to Screen.Sheets,
-            "Lists" to Screen.Lists
-        )
-
-        components.forEach { (name, screen) ->
+        categories.forEach { category ->
             ElevatedCard(
-                onClick = { onComponentClick(screen) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { onNavigate(category.screen) },
+                modifier = Modifier.fillMaxWidth().testTag("category_${category.name.lowercase().replace(" ", "_")}")
             ) {
                 ListItem(
-                    headlineContent = { Text(name) },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null
-                        )
-                    }
+                    headlineContent = { Text(category.name, fontWeight = FontWeight.Bold) },
+                    supportingContent = { Text(category.description) },
+                    leadingContent = { Icon(category.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
             }
         }
-    }
-}
-
-@Composable
-fun TextInputComponentsList(onComponentClick: (Screen) -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-            .testTag("text_input_components_list"),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        val components = listOf(
-            "Text Fields" to Screen.TextFields,
-            "Selection Controls" to Screen.SelectionControls,
-            "Sliders" to Screen.Sliders
-        )
-
-        components.forEach { (name, screen) ->
-            ElevatedCard(
-                onClick = { onComponentClick(screen) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ListItem(
-                    headlineContent = { Text(name) },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ActionComponentsList(onComponentClick: (Screen) -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-            .testTag("action_components_list"),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        val components = listOf(
-            "Buttons" to Screen.Buttons,
-            "FABs" to Screen.FABs,
-            "Icon Buttons" to Screen.IconButtons,
-            "Segmented Buttons" to Screen.SegmentedButtons
-        )
-
-        components.forEach { (name, screen) ->
-            ElevatedCard(
-                onClick = { onComponentClick(screen) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ListItem(
-                    headlineContent = { Text(name) },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoryCard(category: Category, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    ElevatedCard(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = category.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            supportingContent = {
-                Text(
-                    text = category.description,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            },
-            leadingContent = {
-                Icon(
-                    imageVector = category.icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            trailingContent = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
-                )
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    UIEngineSampleAppTheme {
-        MainScreen()
     }
 }
