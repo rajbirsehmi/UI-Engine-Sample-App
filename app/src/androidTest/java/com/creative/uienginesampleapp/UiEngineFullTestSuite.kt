@@ -3,7 +3,6 @@ package com.creative.uienginesampleapp
 import com.creative.uienginesampleapp.robots.*
 import com.creative.uienginesampleapp.ui.theme.UIEngineSampleAppTheme
 import com.sehmi.engine.UiTestEngine
-import com.sehmi.engine.actions.clickOnTag
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -20,6 +19,11 @@ class UiEngineFullTestSuite {
                 MainScreen()
             }
         }
+    }
+
+    @Before
+    fun acceptNotificationPermission() {
+        UiTestEngine.enablePermission("android.permission.POST_NOTIFICATIONS")
     }
 
     @Test
@@ -63,15 +67,41 @@ class UiEngineFullTestSuite {
     }
 
     @Test
-    fun testSystemActions() {
+    fun testPermissionSystemActions() {
         UiTestEngine.withRobot(MainRobot()) {
             navigateToSystem()
         }
         UiTestEngine.withRobot(SystemRobot()) {
-            // needs engine update to handle the
-            // system dialog interactions
+            testPermissionSystemActions()
         }
     }
+
+    @Test
+    fun testNotificationSystemActions() {
+        UiTestEngine.withRobot(MainRobot()) {
+            navigateToSystem()
+        }
+        UiTestEngine.withRobot(SystemRobot()) {
+            testNotificationSystemActions()
+        }
+        UiTestEngine.withRobot(MainRobot()) {
+            goHome()
+        }
+    }
+
+    @Test
+    fun testToggleSystemActions() {
+        UiTestEngine.withRobot(MainRobot()) {
+            navigateToSystem()
+        }
+        UiTestEngine.withRobot(SystemRobot()) {
+            testToggleSystemActions()
+        }
+        UiTestEngine.withRobot(MainRobot()) {
+            goHome()
+        }
+    }
+
 
     @Test
     fun testAccessibility() {

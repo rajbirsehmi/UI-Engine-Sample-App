@@ -12,7 +12,10 @@ class ScrollingRobot : ComposeRuleScope {
 
     fun swipeToLast() {
         scrollToTag("lazy_footer")
-//        swipeUntilVisible("list_list", direction = Direction.DOWN, maxSwipes = 20)
+        swipeUntilVisible(
+            containerTag = "lazy_list", direction = Direction.UP, maxSwipes = 20,
+            targetTag = "list_footer"
+        )
         // Fixed the issue inside the engine. By default, engine was loooking for
         // "root" tag to swipe on which did not exists.
         // new release will fix this issue.

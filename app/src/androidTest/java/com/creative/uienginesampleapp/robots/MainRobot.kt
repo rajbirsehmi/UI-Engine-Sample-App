@@ -2,6 +2,7 @@ package com.creative.uienginesampleapp.robots
 
 import com.sehmi.engine.core.ComposeRuleScope
 import com.sehmi.engine.actions.clickOnTag
+import com.sehmi.engine.actions.pressHome
 import com.sehmi.engine.assertions.assertTagDisplayed
 
 class MainRobot : ComposeRuleScope {
@@ -34,5 +35,9 @@ class MainRobot : ComposeRuleScope {
     fun backToMain() {
         assertTagDisplayed("back_button")
         clickOnTag("back_button")
+    }
+
+    fun goHome() {
+        pressHome()
     }
 }
