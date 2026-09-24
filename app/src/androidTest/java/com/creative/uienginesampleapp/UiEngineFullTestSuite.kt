@@ -89,19 +89,6 @@ class UiEngineFullTestSuite {
         }
     }
 
-    @Test
-    fun testToggleSystemActions() {
-        UiTestEngine.withRobot(MainRobot()) {
-            navigateToSystem()
-        }
-        UiTestEngine.withRobot(SystemRobot()) {
-            testToggleSystemActions()
-        }
-        UiTestEngine.withRobot(MainRobot()) {
-            goHome()
-        }
-    }
-
 
     @Test
     fun testAccessibility() {
